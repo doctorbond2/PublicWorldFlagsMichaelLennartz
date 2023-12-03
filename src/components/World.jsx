@@ -6,6 +6,7 @@ const World = ({ worldInfo }) => {
   const [showHint, setShowHint] = useState(false);
   const [guess, setGuess] = useState({ country: "", city: "" });
   const [rightAnswer, setRightAnswer] = useState({});
+  const [score, setScore] = useState(0);
   useEffect(() => {}, [showHint]);
   useEffect(() => {
     if (count < 1) {
@@ -16,12 +17,32 @@ const World = ({ worldInfo }) => {
   }, [count]);
   const handleGuess = () => {
     if (rightAnswer) {
-      let userAnswer = (guess.city + guess.country).toLowerCase();
-      let correctAnswer = (
-        rightAnswer.city + rightAnswer.country
-      ).toLowerCase();
-      userAnswer === correctAnswer ? alert("CORRECT") : alert("no...");
+      if (!guess.city || !guess.country) {
+        alert("Insert values to guess");
+      } else if (guess) {
+        let userAnswer =
+          guess.city.toLowerCase().trim() + guess.country.toLowerCase().trim();
+        let correctAnswer =
+          rightAnswer.city.toLowerCase().trim() +
+          rightAnswer.country.toLowerCase().trim();
+        userAnswer === correctAnswer ? youAreCorrect() : youAreIncorrect();
+      } else {
+        console.log("else");
+      }
     }
+  };
+  const youAreCorrect = () => {
+    alert("CORRECT");
+    count > 0 && document.querySelector("#increment-button").click();
+  };
+
+  const youAreIncorrect = () => {
+    guess.city !== rightAnswer.city && guess.country !== rightAnswer.country
+      ? alert("Try again")
+      : guess.city === rightAnswer.city
+      ? alert("Only city is correct.")
+      : guess.country === rightAnswer.country &&
+        alert("Only country is correct.");
   };
   const guessInput = (e, part) => {
     const { value } = e.target;
@@ -33,20 +54,20 @@ const World = ({ worldInfo }) => {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         e.preventDefault();
       }
-      if (e.key === "ArrowLeft") {
+      if (e.key === "ArrowLeft" && count > 0) {
         document.querySelector("#decrement-button").click();
       } else if (e.key === "ArrowRight") {
         document.querySelector("#increment-button").click();
+      } else if (e.key === "Enter") {
+        console.log(e.key);
+        handleGuess();
       }
     };
-    const enterPress = (e) => {
-      e.key === "Enter" && handleGuess();
-    };
+
     window.addEventListener("keydown", keyPress);
-    window.addEventListener("keydown", enterPress);
+
     return () => {
       window.removeEventListener("keydown", keyPress);
-      window.removeEventListener("keydown", enterPress);
     };
   }, []);
   return (
@@ -67,8 +88,8 @@ const World = ({ worldInfo }) => {
       >
         Inc
       </button>
-
-      {count}
+      <div>Score: {score * 10}</div>
+      Country: {count}
       <div className="europa-layout">
         <div>Welcome!</div>
         <button
@@ -86,7 +107,13 @@ const World = ({ worldInfo }) => {
             worldInfo
               .map((x) => (
                 <Country
-                  {...{ showHint, guessInput, setRightAnswer, rightAnswer }}
+                  {...{
+                    showHint,
+                    guessInput,
+                    setRightAnswer,
+                    rightAnswer,
+                    setShowHint,
+                  }}
                   info={x}
                 />
               ))

@@ -28,7 +28,7 @@ button, input, select {
   object-fit: cover;
   height: 320px;
   width: 100%;
-  background-color: black;
+
 }
 .input-style {
   flex-direction: column;

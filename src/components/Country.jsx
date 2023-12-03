@@ -6,11 +6,15 @@ const Country = ({
   guessInput,
   setRightAnswer,
   rightAnswer,
+  setShowHint,
 }) => {
   useEffect(() => {
+    const inputs = document.querySelectorAll(".guess-input");
+    inputs.forEach((x) => (x.value = ""));
     setShowInfo(false);
     setRightAnswer({ country: common, city: capital[0] });
     console.log("Right Answer:", rightAnswer);
+    setShowHint();
   }, [info]);
 
   const [showInfo, setShowInfo] = useState(false);
@@ -30,36 +34,38 @@ const Country = ({
           </header>
         </div>
         <div className="input-style">
-          {showInfo ? (
+          {showInfo && (
             <div>
               <h3>{common}</h3>
               <br></br>
               <p>{capital && capital[0]}</p>
             </div>
-          ) : showHint ? (
+          )}
+          {showHint && (
             <>
               <h3>Country: {common.slice(0, 3)}...</h3>
               <br></br>
               <h3>City: {capital && capital[0].slice(0, 3)}...</h3>
             </>
-          ) : (
-            <>
-              <input
-                placeholder="Country?"
-                type="text"
-                onChange={(e) => {
-                  guessInput(e, "country");
-                }}
-              ></input>
-              <input
-                placeholder="City?"
-                type="text"
-                onChange={(e) => {
-                  guessInput(e, "city");
-                }}
-              ></input>
-            </>
           )}
+          <>
+            <input
+              className="guess-input"
+              placeholder="Country?"
+              type="text"
+              onChange={(e) => {
+                guessInput(e, "country");
+              }}
+            ></input>
+            <input
+              className="guess-input"
+              placeholder="City?"
+              type="text"
+              onChange={(e) => {
+                guessInput(e, "city");
+              }}
+            ></input>
+          </>
         </div>
       </div>
     </>
