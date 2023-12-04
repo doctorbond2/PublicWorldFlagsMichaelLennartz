@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Home from "../pages/Home";
 
 const Country = ({
   info,
@@ -7,17 +8,22 @@ const Country = ({
   setRightAnswer,
   rightAnswer,
   setShowHint,
+  setGuess,
 }) => {
+  const defaultGuess = { country: "", city: "" };
+  const [unlocked, setUnlocked] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   useEffect(() => {
     const inputs = document.querySelectorAll(".guess-input");
     inputs.forEach((x) => (x.value = ""));
     setShowInfo(false);
     setRightAnswer({ country: common, city: capital[0] });
+    setGuess(defaultGuess);
     console.log("Right Answer:", rightAnswer);
+    console.log("GUESS:", defaultGuess);
     setShowHint();
   }, [info]);
 
-  const [showInfo, setShowInfo] = useState(false);
   const {
     flags: { png },
     capital,
@@ -59,7 +65,7 @@ const Country = ({
               <h3>City: {capital && capital[0].slice(0, 3)}...</h3>
             </>
           )}
-          {showInfo && (
+          {showInfo && unlocked && (
             <div>
               <h3>{common}</h3>
               <br></br>

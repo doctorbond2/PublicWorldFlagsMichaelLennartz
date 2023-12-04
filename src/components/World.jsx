@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from "react";
 import Country from "./Country";
+import Home from "../pages/Home";
+import { right } from "@popperjs/core";
 
-const World = ({ worldInfo }) => {
-  const [count, setCount] = useState(0);
+const World = ({ worldInfo, setLives, lives }) => {
+  const [count, setCount] = useState(2);
   const [showHint, setShowHint] = useState(false);
   const [guess, setGuess] = useState({ country: "", city: "" });
   const [rightAnswer, setRightAnswer] = useState({});
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(10);
   const [streak, setStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
   useEffect(() => {}, [showHint]);
 
   const handleGuess = () => {
     if (rightAnswer) {
-      if (!guess.city || !guess.country) {
+      let cityGuess = guess.city.toLowerCase();
+      let countryGuess = guess.country.toLowerCase();
+      let rightCity = rightAnswer.city.toLowerCase();
+      let rightCountry = rightAnswer.country.toLowerCase();
+
+      if (!cityGuess || !countryGuess) {
         alert("Insert values to guess");
       } else if (guess) {
-        let userAnswer =
-          guess.city.toLowerCase().trim() + guess.country.toLowerCase().trim();
-        let correctAnswer =
-          rightAnswer.city.toLowerCase().trim() +
-          rightAnswer.country.toLowerCase().trim();
+        let userAnswer = cityGuess.trim() + countryGuess.trim();
+        let correctAnswer = rightCity.trim() + rightCountry.trim();
         userAnswer === correctAnswer ? youAreCorrect() : youAreIncorrect();
       } else {
         console.log("else");
@@ -40,12 +43,17 @@ const World = ({ worldInfo }) => {
   };
 
   const youAreIncorrect = () => {
-    guess.city !== rightAnswer.city && guess.country !== rightAnswer.country
-      ? alert("Try again")
-      : guess.city === rightAnswer.city
-      ? alert("Only city is correct.")
-      : guess.country === rightAnswer.country &&
-        alert("Only country is correct.");
+    if (
+      guess.city !== rightAnswer.city &&
+      guess.country !== rightAnswer.country
+    ) {
+      alert("Try again");
+    } else if (guess.city === rightAnswer.city) {
+      alert("Only city is correct.");
+    } else if (guess.country === rightAnswer.country) {
+      alert("Only country is correct.");
+    }
+    setLives((prev) => prev - 1);
     setStreak(0);
   };
   const guessInput = (e, part) => {
@@ -53,6 +61,9 @@ const World = ({ worldInfo }) => {
     setGuess({ ...guess, [part]: value });
     console.log(guess);
   };
+  useEffect(() => {
+    console.log(count);
+  }, [count]);
   useEffect(() => {
     const keyPress = (e) => {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -66,6 +77,7 @@ const World = ({ worldInfo }) => {
         document.querySelector(".answer-button").click();
       }
     };
+    setLives(10);
     window.addEventListener("keydown", keyPress);
     return () => {
       window.removeEventListener("keydown", keyPress);
@@ -73,31 +85,44 @@ const World = ({ worldInfo }) => {
   }, []);
   return (
     <>
-      <header>
-        <button
-          id="decrement-button"
-          onClick={(e) => {
-            count > 0 && setCount(count - 1);
-          }}
-        >
-          Dec
-        </button>
-        <button
-          id="increment-button"
-          onClick={(e) => {
-            count < worldInfo.length - 1 && setCount(count + 1);
-          }}
-        >
-          Inc
-        </button>
-        <h2>Score: {score * 10}</h2>
-        <h3>
-          Lives: {lives}
-          <progress max={10} value={lives}></progress>
-        </h3>
-        <h4> Country: {count + 1}</h4>
-        <h4>Streak: {streak}</h4>
-        <h5>Longest streak: {longestStreak}</h5>
+      <header style={{ display: "flex" }}>
+        <div>
+          <button
+            id="decrement-button"
+            onClick={() => {
+              setCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
+            }}
+          >
+            Prev
+          </button>
+          <button
+            id="increment-button"
+            onClick={() => {
+              setCount((prevCount) =>
+                prevCount < worldInfo.length - 1 ? prevCount + 1 : prevCount
+              );
+            }}
+          >
+            Next
+          </button>
+          <h2>Score: {score * 10}</h2>
+          <h3>
+            Life:
+            <progress max={10} value={lives}></progress>
+          </h3>
+          <h4> Country: {count + 1}</h4>
+          <h4>Streak: {streak}</h4>
+          <h5>Longest streak: {longestStreak}</h5>
+        </div>
+        <div style={{ marginLeft: "30%" }}>
+          <article>
+            <h3>Hej Brandon! Gjorde ett halvtrasigt flaggspel.</h3>
+            <p>
+              Det går att styra med höger och vänster pilarna. Det går också att
+              trycka enter för att registrera ditt svar!
+            </p>
+          </article>
+        </div>
       </header>
       <div className="europa-layout">
         <section>
@@ -112,6 +137,7 @@ const World = ({ worldInfo }) => {
                       setRightAnswer,
                       rightAnswer,
                       setShowHint,
+                      setGuess,
                     }}
                     info={x}
                   />
