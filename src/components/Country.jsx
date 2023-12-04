@@ -34,20 +34,6 @@ const Country = ({
           </header>
         </div>
         <div className="input-style">
-          {showInfo && (
-            <div>
-              <h3>{common}</h3>
-              <br></br>
-              <p>{capital && capital[0]}</p>
-            </div>
-          )}
-          {showHint && (
-            <>
-              <h3>Country: {common.slice(0, 3)}...</h3>
-              <br></br>
-              <h3>City: {capital && capital[0].slice(0, 3)}...</h3>
-            </>
-          )}
           <>
             <input
               className="guess-input"
@@ -66,6 +52,20 @@ const Country = ({
               }}
             ></input>
           </>
+          {showHint && (
+            <>
+              <h3>Country: {common.slice(0, 3)}...</h3>
+              <br></br>
+              <h3>City: {capital && capital[0].slice(0, 3)}...</h3>
+            </>
+          )}
+          {showInfo && (
+            <div>
+              <h3>{common}</h3>
+              <br></br>
+              <p>{capital && capital[0]}</p>
+            </div>
+          )}
         </div>
       </div>
     </>

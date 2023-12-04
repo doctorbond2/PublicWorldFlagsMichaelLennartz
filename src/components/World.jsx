@@ -2,19 +2,16 @@ import React, { useEffect, useState } from "react";
 import Country from "./Country";
 
 const World = ({ worldInfo }) => {
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [guess, setGuess] = useState({ country: "", city: "" });
   const [rightAnswer, setRightAnswer] = useState({});
   const [score, setScore] = useState(0);
+  const [lives, setLives] = useState(10);
+  const [streak, setStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
   useEffect(() => {}, [showHint]);
-  useEffect(() => {
-    if (count < 1) {
-      setCount(0);
-    } else if (count >= worldInfo.length - 1) {
-      setCount(worldInfo.length - 1);
-    }
-  }, [count]);
+
   const handleGuess = () => {
     if (rightAnswer) {
       if (!guess.city || !guess.country) {
@@ -31,9 +28,15 @@ const World = ({ worldInfo }) => {
       }
     }
   };
+
   const youAreCorrect = () => {
     alert("CORRECT");
-    count > 0 && document.querySelector("#increment-button").click();
+    setScore((prev) => prev + 10);
+    setStreak((prev) => prev + 1);
+    streak >= longestStreak && setLongestStreak(streak);
+    count > 0 &&
+      count < worldInfo.length - 1 &&
+      document.querySelector("#increment-button").click();
   };
 
   const youAreIncorrect = () => {
@@ -43,6 +46,7 @@ const World = ({ worldInfo }) => {
       ? alert("Only city is correct.")
       : guess.country === rightAnswer.country &&
         alert("Only country is correct.");
+    setStreak(0);
   };
   const guessInput = (e, part) => {
     const { value } = e.target;
@@ -59,69 +63,81 @@ const World = ({ worldInfo }) => {
       } else if (e.key === "ArrowRight") {
         document.querySelector("#increment-button").click();
       } else if (e.key === "Enter") {
-        console.log(e.key);
-        handleGuess();
+        document.querySelector(".answer-button").click();
       }
     };
-
     window.addEventListener("keydown", keyPress);
-
     return () => {
       window.removeEventListener("keydown", keyPress);
     };
   }, []);
   return (
     <>
-      <button
-        id="decrement-button"
-        onClick={(e) => {
-          setCount(count - 1);
-        }}
-      >
-        Dec
-      </button>
-      <button
-        id="increment-button"
-        onClick={(e) => {
-          setCount(count + 1);
-        }}
-      >
-        Inc
-      </button>
-      <div>Score: {score * 10}</div>
-      Country: {count}
-      <div className="europa-layout">
-        <div>Welcome!</div>
+      <header>
         <button
-          onClick={() => {
-            setShowHint(!showHint);
-            console.log(showHint);
+          id="decrement-button"
+          onClick={(e) => {
+            count > 0 && setCount(count - 1);
           }}
         >
-          {showHint ? "Hide hint" : "Show hint"}
+          Dec
         </button>
-        <button onClick={handleGuess}>Answer!</button>
-
-        <div>
-          {worldInfo &&
-            worldInfo
-              .map((x) => (
-                <Country
-                  {...{
-                    showHint,
-                    guessInput,
-                    setRightAnswer,
-                    rightAnswer,
-                    setShowHint,
-                  }}
-                  info={x}
-                />
-              ))
-              .filter((x, i) => {
-                return i === count;
-              })}
-        </div>
+        <button
+          id="increment-button"
+          onClick={(e) => {
+            count < worldInfo.length - 1 && setCount(count + 1);
+          }}
+        >
+          Inc
+        </button>
+        <h2>Score: {score * 10}</h2>
+        <h3>
+          Lives: {lives}
+          <progress max={10} value={lives}></progress>
+        </h3>
+        <h4> Country: {count + 1}</h4>
+        <h4>Streak: {streak}</h4>
+        <h5>Longest streak: {longestStreak}</h5>
+      </header>
+      <div className="europa-layout">
+        <section>
+          <div>
+            {worldInfo &&
+              worldInfo
+                .map((x) => (
+                  <Country
+                    {...{
+                      showHint,
+                      guessInput,
+                      setRightAnswer,
+                      rightAnswer,
+                      setShowHint,
+                    }}
+                    info={x}
+                  />
+                ))
+                .filter((x, i) => {
+                  return i === count;
+                })}
+          </div>
+          <div>Welcome!</div>
+          <div className="buttonz">
+            <button
+              className="buttonz-x"
+              onClick={() => {
+                setShowHint(!showHint);
+                console.log(showHint);
+              }}
+            >
+              {showHint ? "Hide hint" : "Show hint"}
+            </button>
+            <button className="buttonz-x answer-button" onClick={handleGuess}>
+              Answer!
+            </button>
+          </div>
+        </section>
       </div>
+      <section className="all-flags">asd</section>
     </>
   );
 };
