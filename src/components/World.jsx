@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Country from "./Country";
-import Home from "../pages/Home";
-import { right } from "@popperjs/core";
+import { Link } from "react-router-dom";
+import CCard from "./CCard";
+import { Col, Row } from "react-bootstrap";
+import CountryList from "./CountryList";
 
-const World = ({ worldInfo, setLives, lives }) => {
+const World = ({ worldInfo, setLives, lives, unlocked }) => {
   const [count, setCount] = useState(2);
   const [showHint, setShowHint] = useState(false);
   const [guess, setGuess] = useState({ country: "", city: "" });
@@ -11,6 +13,7 @@ const World = ({ worldInfo, setLives, lives }) => {
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
+  const [correctCountries, setCorrectCountries] = useState([]);
   useEffect(() => {}, [showHint]);
 
   const handleGuess = () => {
@@ -25,23 +28,26 @@ const World = ({ worldInfo, setLives, lives }) => {
       } else if (guess) {
         let userAnswer = cityGuess.trim() + countryGuess.trim();
         let correctAnswer = rightCity.trim() + rightCountry.trim();
-        userAnswer === correctAnswer ? youAreCorrect() : youAreIncorrect();
+        userAnswer === correctAnswer
+          ? youAreCorrect(countryGuess)
+          : youAreIncorrect();
       } else {
         console.log("else");
       }
     }
   };
-
-  const youAreCorrect = () => {
-    alert("CORRECT");
+  //Rätt svar -> fixa streaks, gå till nästa land, adda ett land
+  const youAreCorrect = (country) => {
+    alert("CORRECT! + 100 points and country added!");
     setScore((prev) => prev + 10);
     setStreak((prev) => prev + 1);
-    streak >= longestStreak && setLongestStreak(streak);
+    streak >= longestStreak && setLongestStreak((prev) => prev + 1);
     count > 0 &&
       count < worldInfo.length - 1 &&
       document.querySelector("#increment-button").click();
+    setCorrectCountries((prev) => [...prev, country]);
   };
-
+  //Hantering av olika felsvar
   const youAreIncorrect = () => {
     if (
       guess.city !== rightAnswer.city &&
@@ -50,7 +56,7 @@ const World = ({ worldInfo, setLives, lives }) => {
       alert("Try again");
     } else if (guess.city === rightAnswer.city) {
       alert("Only city is correct.");
-    } else if (guess.country === rightAnswer.country) {
+    } else {
       alert("Only country is correct.");
     }
     setLives((prev) => prev - 1);
@@ -59,11 +65,11 @@ const World = ({ worldInfo, setLives, lives }) => {
   const guessInput = (e, part) => {
     const { value } = e.target;
     setGuess({ ...guess, [part]: value });
-    console.log(guess);
   };
   useEffect(() => {
-    console.log(count);
-  }, [count]);
+    console.log(guess);
+  }, [count, guess]);
+  //Addar windowevents här
   useEffect(() => {
     const keyPress = (e) => {
       if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -119,13 +125,18 @@ const World = ({ worldInfo, setLives, lives }) => {
             <h3>Hej Brandon! Gjorde ett halvtrasigt flaggspel.</h3>
             <p>
               Det går att styra med höger och vänster pilarna. Det går också att
-              trycka enter för att registrera ditt svar!
+              trycka enter för att registrera ditt svar! Svarar du rätt på både
+              land och huvudstad får du 100 poäng och landet addas längst ner
+              med lite info. Om du vill hoppa detta och gå vidare för den
+              ursprungliga uppgiften har du en länk till den{" "}
+              <Link to="uppgift">här</Link>
             </p>
           </article>
         </div>
       </header>
       <div className="europa-layout">
         <section>
+          <h1>Welcome!</h1>
           <div>
             {worldInfo &&
               worldInfo
@@ -146,7 +157,6 @@ const World = ({ worldInfo, setLives, lives }) => {
                   return i === count;
                 })}
           </div>
-          <div>Welcome!</div>
           <div className="buttonz">
             <button
               className="buttonz-x"
@@ -163,7 +173,19 @@ const World = ({ worldInfo, setLives, lives }) => {
           </div>
         </section>
       </div>
-      <section className="all-flags">asd</section>
+      <section className="correct-countries">
+        {worldInfo &&
+          worldInfo
+            .filter((x) => {
+              let name = x.name.common.toLowerCase();
+              return correctCountries.includes(name);
+            })
+            .map((x) => (
+              <div>
+                <CCard info={x} />
+              </div>
+            ))}
+      </section>
     </>
   );
 };

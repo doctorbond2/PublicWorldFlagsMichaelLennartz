@@ -11,7 +11,6 @@ const Country = ({
   setGuess,
 }) => {
   const defaultGuess = { country: "", city: "" };
-  const [unlocked, setUnlocked] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   useEffect(() => {
     const inputs = document.querySelectorAll(".guess-input");
@@ -51,7 +50,7 @@ const Country = ({
             ></input>
             <input
               className="guess-input"
-              placeholder="City?"
+              placeholder="Capital?"
               type="text"
               onChange={(e) => {
                 guessInput(e, "city");
@@ -64,13 +63,6 @@ const Country = ({
               <br></br>
               <h3>City: {capital && capital[0].slice(0, 3)}...</h3>
             </>
-          )}
-          {showInfo && unlocked && (
-            <div>
-              <h3>{common}</h3>
-              <br></br>
-              <p>{capital && capital[0]}</p>
-            </div>
           )}
         </div>
       </div>

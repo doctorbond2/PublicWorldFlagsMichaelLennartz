@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import CCard from "./CCard";
 
-const CountryList = ({ worldData }) => {
+const CountryList = ({ worldData, unlocked }) => {
   useEffect(() => {
     console.log("world ender", worldData);
   }, []);
@@ -11,9 +12,12 @@ const CountryList = ({ worldData }) => {
           width: "100vw",
           height: "70vh",
           backgroundColor: "lightyellow",
+          display: "flex",
+          flexWrap: "wrap",
         }}
       >
-        asd
+        {worldData &&
+          worldData.map((x) => <CCard info={x} unlocked={unlocked} />)}
       </div>
     </>
   );

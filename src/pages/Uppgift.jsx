@@ -5,11 +5,10 @@ import Home from "./Home";
 import CountryList from "../components/CountryList";
 import { Link } from "react-router-dom";
 
-const Uppgift = () => {
+const Uppgift = ({ unlocked, setUnlocked }) => {
   const [showWorld, setShowWorld] = useState(false);
   const [chosenWorld, setChosenWorld] = useState("");
   const [worldData, setWorldData] = useState(null);
-  const [lives, setLives] = useState(1);
   const handleClick = () => {
     chosenWorld && setShowWorld(!showWorld);
   };
@@ -30,8 +29,8 @@ const Uppgift = () => {
     <>
       <button
         onClick={() => {
-          setLives(10);
           handleClick();
+          setUnlocked(true);
         }}
       >
         Show the World
@@ -50,8 +49,8 @@ const Uppgift = () => {
         <option value={"europe"}>Europa</option>
         <option value={"asia"}>Asien</option>
       </select>
-      <Link>asd</Link>
-      {showWorld && worldData && <CountryList {...{ worldData }} />}
+      <Link to="/">Flaggame</Link>
+      {showWorld && worldData && <CountryList {...{ worldData, unlocked }} />}
     </>
   );
 };

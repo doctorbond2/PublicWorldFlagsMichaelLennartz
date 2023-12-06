@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import World from "../components/World";
 import { Link } from "react-router-dom";
 
-const Home = () => {
+const Home = ({ unlocked }) => {
   const [showWorld, setShowWorld] = useState(false);
   const [chosenWorld, setChosenWorld] = useState("");
   const [worldData, setWorldData] = useState(null);
@@ -35,7 +35,7 @@ const Home = () => {
           handleClick();
         }}
       >
-        Show the World
+        {!showWorld ? "Show the World" : "End the World.."}
       </button>
       <select
         placeholder="CHOOSE"
@@ -51,7 +51,12 @@ const Home = () => {
         <option value={"asia"}>Asien</option>
       </select>
       {showWorld && lives > 0 && (
-        <World worldInfo={worldData} lives={lives} setLives={setLives} />
+        <World
+          worldInfo={worldData}
+          lives={lives}
+          setLives={setLives}
+          unlocked={unlocked}
+        />
       )}
     </>
   );
